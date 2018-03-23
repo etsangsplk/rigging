@@ -23,7 +23,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/v1"
 	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
@@ -184,7 +183,7 @@ func (c *DeploymentControl) collectPods(deployment *v1beta1.Deployment) (map[str
 	if deployment.Spec.Selector != nil {
 		labels = deployment.Spec.Selector.MatchLabels
 	}
-	pods, err := CollectPods(deployment.Namespace, labels, c.Entry, c.Client, func(ref api.ObjectReference) bool {
+	pods, err := CollectPods(deployment.Namespace, labels, c.Entry, c.Client, func(ref metav1.OwnerReference) bool {
 		return ref.Kind == KindDeployment && ref.UID == deployment.UID
 	})
 	return pods, ConvertError(err)

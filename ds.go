@@ -23,7 +23,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/v1"
 	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
@@ -88,7 +87,7 @@ func (c *DSControl) collectPods(daemonSet *v1beta1.DaemonSet) (map[string]v1.Pod
 	if daemonSet.Spec.Selector != nil {
 		labels = daemonSet.Spec.Selector.MatchLabels
 	}
-	pods, err := CollectPods(daemonSet.Namespace, labels, c.Entry, c.Client, func(ref api.ObjectReference) bool {
+	pods, err := CollectPods(daemonSet.Namespace, labels, c.Entry, c.Client, func(ref metav1.OwnerReference) bool {
 		return ref.Kind == KindDaemonSet && ref.UID == daemonSet.UID
 	})
 	return pods, trace.Wrap(err)

@@ -22,7 +22,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/pkg/api"
 	"k8s.io/client-go/pkg/api/v1"
 	batchv1 "k8s.io/client-go/pkg/apis/batch/v1"
 )
@@ -157,7 +156,7 @@ func (c *JobControl) collectPods(job *batchv1.Job) (map[string]v1.Pod, error) {
 	if job.Spec.Selector != nil {
 		labels = job.Spec.Selector.MatchLabels
 	}
-	pods, err := CollectPods(job.Namespace, labels, c.Entry, c.Clientset, func(ref api.ObjectReference) bool {
+	pods, err := CollectPods(job.Namespace, labels, c.Entry, c.Clientset, func(ref metav1.OwnerReference) bool {
 		return ref.Kind == KindJob && ref.UID == job.UID
 	})
 	return pods, ConvertError(err)
